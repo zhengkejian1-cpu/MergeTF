@@ -489,13 +489,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 新手引导（移动端居中，避免底部固定定位裁切） */
+/* 新手引导（移动端居中；用 .is-open 控制显示，避免 [hidden] 与 display:flex 冲突） */
 .tutorial-overlay {
   position: absolute;
   inset: 0;
   z-index: 30;
+  display: none;
+  pointer-events: none;
   background: rgba(0, 0, 0, 0.65);
-  display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px;
@@ -504,7 +505,16 @@ body {
   box-sizing: border-box;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+.tutorial-overlay.is-open {
+  display: flex;
   pointer-events: auto;
+}
+
+.tutorial-overlay[hidden] {
+  display: none !important;
+  pointer-events: none !important;
 }
 
 .tutorial-step {

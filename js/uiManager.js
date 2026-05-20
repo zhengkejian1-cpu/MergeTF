@@ -165,30 +165,47 @@ export class UIManager {
       { text: '虚线圈=感应=碰撞=攻击距离。进圈与怪物 1v1；没接上的怪会攻城堡。' },
     ];
     let step = 0;
-    const key = 'synthesis_defense_tutorial_v4';
-    if (localStorage.getItem(key)) return;
-
+    const key = 'synthesis_defense_tutorial_v5';
     const overlay = this.els.tutorialOverlay;
+    const btn = this.els.tutorialNext;
+    if (!overlay) return;
+
+    const hideTutorial = () => {
+      overlay.classList.remove('is-open');
+      overlay.hidden = true;
+      overlay.setAttribute('hidden', '');
+      overlay.setAttribute('aria-hidden', 'true');
+      localStorage.setItem(key, '1');
+    };
+
+    if (localStorage.getItem(key) || localStorage.getItem('synthesis_defense_tutorial_v4')) {
+      hideTutorial();
+      return;
+    }
+
     const show = () => {
       if (step >= steps.length) {
-        overlay.hidden = true;
-        localStorage.setItem(key, '1');
+        hideTutorial();
         return;
       }
       overlay.hidden = false;
+      overlay.removeAttribute('hidden');
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
       const s = steps[step];
       this.els.tutorialText.textContent = s.text;
       this.els.tutorialStep.className = 'tutorial-step';
-      const btn = this.els.tutorialNext;
       if (btn) {
         btn.textContent = step >= steps.length - 1 ? '知道了' : '下一步';
       }
     };
 
-    this.els.tutorialNext?.addEventListener('click', () => {
+    const onNext = () => {
       step++;
       show();
-    });
+    };
+
+    btn?.addEventListener('click', onNext);
     show();
   }
 
