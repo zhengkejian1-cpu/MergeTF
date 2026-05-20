@@ -489,50 +489,63 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 新手引导 */
+/* 新手引导（移动端居中，避免底部固定定位裁切） */
 .tutorial-overlay {
   position: absolute;
   inset: 0;
   z-index: 30;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto;
 }
 
 .tutorial-step {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  flex-shrink: 0;
+  width: min(100%, 400px);
+  max-height: min(72%, 420px);
+  overflow-y: auto;
   background: #fff;
   color: #1a472a;
-  padding: 16px 20px;
+  padding: 18px 20px 16px;
   border-radius: 16px;
-  max-width: 85%;
   text-align: center;
   box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+.tutorial-step p {
+  margin: 0;
+  font-size: clamp(14px, 3.8vw, 16px);
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .tutorial-step button {
-  margin-top: 12px;
-  padding: 8px 20px;
+  display: block;
+  margin: 16px auto 0;
+  padding: 12px 28px;
+  min-height: 48px;
+  min-width: 140px;
   border: none;
   border-radius: 12px;
   background: var(--primary-light);
   color: #fff;
+  font-family: inherit;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
-.tutorial-step.pos-synthesis {
-  top: 200px;
-}
-
-.tutorial-step.pos-lane {
-  top: 640px;
-}
-
-.tutorial-step.pos-top {
-  top: 140px;
-}
-
-.tutorial-step.pos-lane {
-  top: 660px;
+.tutorial-step button:active {
+  transform: scale(0.97);
 }

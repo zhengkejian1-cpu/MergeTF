@@ -160,12 +160,12 @@ export class UIManager {
 
   _setupTutorial() {
     const steps = [
-      { text: '上方显示即将掉落的士兵等级，可点「调换」换顺序', class: 'pos-top' },
-      { text: '顶部带内左右瞄准、松手落下（12金），同级进圈即合成', class: 'pos-synthesis' },
-      { text: '虚线圈=感应=碰撞=攻击距；进圈与怪物 1v1，未接战怪物攻城堡', class: 'pos-lane' },
+      { text: '上方显示即将掉落的士兵等级，可点「调换」换顺序' },
+      { text: '在战场内左右瞄准、松手落下（12金），同级进圈即合成' },
+      { text: '虚线圈=感应=碰撞=攻击距离。进圈与怪物 1v1；没接上的怪会攻城堡。' },
     ];
     let step = 0;
-    const key = 'synthesis_defense_tutorial_v3';
+    const key = 'synthesis_defense_tutorial_v4';
     if (localStorage.getItem(key)) return;
 
     const overlay = this.els.tutorialOverlay;
@@ -178,7 +178,11 @@ export class UIManager {
       overlay.hidden = false;
       const s = steps[step];
       this.els.tutorialText.textContent = s.text;
-      this.els.tutorialStep.className = `tutorial-step ${s.class}`;
+      this.els.tutorialStep.className = 'tutorial-step';
+      const btn = this.els.tutorialNext;
+      if (btn) {
+        btn.textContent = step >= steps.length - 1 ? '知道了' : '下一步';
+      }
     };
 
     this.els.tutorialNext?.addEventListener('click', () => {
