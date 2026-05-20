@@ -1,0 +1,18 @@
+# Unity（Web 版不部署）
+Assets/
+Packages/
+ProjectSettings/
+Library/
+Logs/
+Temp/
+Obj/
+UserSettings/
+*.csproj
+*.sln
+
+# 工具 / 系统
+node_modules/
+.vercel/
+.DS_Store
+Thumbs.db
+*.log

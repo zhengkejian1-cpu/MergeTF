@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>合成士兵·城堡防御</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="game-wrapper">
+    <div class="game-container" id="gameContainer">
+      <canvas id="gameCanvas" width="540" height="960"></canvas>
+
+      <header class="status-bar">
+        <div class="status-row">
+          <div class="status-hp">
+            <span class="icon">❤️</span>
+            <span id="castleHp">120</span>/<span id="castleMaxHp">120</span>
+          </div>
+          <div class="status-wave">
+            <span id="waveLabel">第1波</span>
+            <span class="wave-timer" id="waveTimer"></span>
+          </div>
+          <div class="status-gold">
+            <span class="icon">💰</span>
+            <span id="goldAmount">96</span>
+          </div>
+          <button class="btn-settings" id="btnSettings" type="button" aria-label="设置">⚙️</button>
+        </div>
+
+        <div class="drop-queue-bar">
+          <span class="drop-label">下一落</span>
+          <div class="drop-preview primary" id="dropNext">
+            <span class="drop-lv" id="dropNextLv">1</span>
+            <span class="drop-name" id="dropNextName">民兵</span>
+          </div>
+          <div class="drop-preview secondary" id="dropSecond">
+            <span class="drop-lv" id="dropSecondLv">2</span>
+            <span class="drop-name" id="dropSecondName">弓手</span>
+          </div>
+          <button class="btn-swap" id="btnSwapDrop" type="button" title="与下一个调换">⇄ 调换</button>
+        </div>
+      </header>
+
+      <div class="synthesis-touch" id="synthesisTouch"></div>
+
+      <div class="fx-overlay" id="fxOverlay" hidden></div>
+      <div class="boss-banner" id="bossBanner" hidden>⚠️ BOSS 来袭 ⚠️</div>
+      <div class="float-text-layer" id="floatTextLayer"></div>
+      <div class="game-toast" id="gameToast" hidden aria-live="polite"></div>
+    </div>
+  </div>
+
+  <dialog class="modal" id="pauseModal">
+    <div class="modal-card modal-card-scroll">
+      <h2>⚙️ 设置</h2>
+      <label class="slider-row">
+        <span>音乐</span>
+        <input type="range" id="musicVolume" min="0" max="100" value="70" />
+      </label>
+      <label class="slider-row">
+        <span>音效</span>
+        <input type="range" id="sfxVolume" min="0" max="100" value="80" />
+      </label>
+      <label class="toggle-row">
+        <span>震动</span>
+        <input type="checkbox" id="vibrationToggle" checked />
+      </label>
+      <hr class="modal-divider" />
+      <label class="toggle-row">
+        <span>调试模式</span>
+        <input type="checkbox" id="debugEnabled" />
+      </label>
+      <div class="debug-panel" id="debugPanel" hidden>
+        <p class="debug-hint">数值即时生效，作用于之后生成的敌人</p>
+        <label class="slider-row">
+          <span>出怪频率 <strong id="debugSpawnLabel">×3</strong></span>
+          <input type="range" id="debugSpawnRate" data-debug="spawnRate" min="0.5" max="15" step="0.5" value="3" />
+        </label>
+        <label class="slider-row">
+          <span>敌人生血 <strong id="debugHpLabel">×1.0</strong></span>
+          <input type="range" id="debugEnemyHp" data-debug="enemyHpMult" min="0.1" max="10" step="0.1" value="1" />
+        </label>
+        <label class="slider-row">
+          <span>敌人攻击 <strong id="debugAtkLabel">×1.0</strong></span>
+          <input type="range" id="debugEnemyAtk" data-debug="enemyAtkMult" min="0.1" max="5" step="0.1" value="1" />
+        </label>
+        <label class="slider-row">
+          <span>敌人移速 <strong id="debugSpdLabel">×1.0</strong></span>
+          <input type="range" id="debugEnemySpd" data-debug="enemySpeedMult" min="0.3" max="4" step="0.1" value="1" />
+        </label>
+        <label class="slider-row">
+          <span>每波数量 <strong id="debugCountLabel">×1.0</strong></span>
+          <input type="range" id="debugWaveCount" data-debug="waveCountMult" min="0.5" max="5" step="0.25" value="1" />
+        </label>
+        <label class="slider-row">
+          <span>波次成长 <strong id="debugWaveHpLabel">×1.0</strong></span>
+          <input type="range" id="debugWaveHp" data-debug="waveHpMult" min="0" max="3" step="0.1" value="1" />
+        </label>
+        <label class="slider-row">
+          <span>波间等待 <strong id="debugDelayLabel">×0.35</strong></span>
+          <input type="range" id="debugWaveDelay" data-debug="waveDelayMult" min="0.1" max="2" step="0.05" value="0.35" />
+        </label>
+        <label class="slider-row">
+          <span>场上怪上限 <strong id="debugCapLabel">×2.0</strong></span>
+          <input type="range" id="debugMaxActive" data-debug="maxActiveMult" min="1" max="5" step="0.5" value="2" />
+        </label>
+        <label class="slider-row">
+          <span>击杀赏金 <strong id="debugRewardLabel">×1.0</strong></span>
+          <input type="range" id="debugReward" data-debug="rewardMult" min="0" max="10" step="0.5" value="1" />
+        </label>
+        <div class="debug-gold-row">
+          <button class="modal-btn debug-gold-btn" type="button" id="btnDebugGold100">+100 金</button>
+          <button class="modal-btn debug-gold-btn" type="button" id="btnDebugGold500">+500 金</button>
+          <button class="modal-btn debug-gold-btn" type="button" id="btnDebugGold2k">+2000 金</button>
+        </div>
+        <div class="debug-gold-row">
+          <button class="modal-btn debug-action-btn" type="button" id="btnDebugNextWave">立即下一波</button>
+          <button class="modal-btn debug-action-btn" type="button" id="btnDebugSpawn5">+5 怪</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="btnResume" type="button">继续游戏</button>
+        <button class="modal-btn" id="btnLobby" type="button">返回大厅</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="gameOverModal">
+    <div class="modal-card game-over">
+      <h2>💀 城堡沦陷 💀</h2>
+      <p>到达波次：<strong id="finalWave">0</strong></p>
+      <p>击杀敌人：<strong id="finalKills">0</strong></p>
+      <div class="modal-actions column">
+        <button class="modal-btn primary" id="btnRevive" type="button">观看广告复活</button>
+        <button class="modal-btn" id="btnRestart" type="button">重来</button>
+        <button class="modal-btn subtle" id="btnShare" type="button">分享战绩</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="tutorial-overlay" id="tutorialOverlay" hidden>
+    <div class="tutorial-step" id="tutorialStep">
+      <p id="tutorialText"></p>
+      <button type="button" id="tutorialNext">下一步</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "github": {
+    "sshRemote": "git@github.com-zhengkejian1:zhengkejian1-cpu/MergeTF.git",
+    "branch": "main",
+    "userName": "zhengkejian1-cpu",
+    "userEmail": "zhengkejian1@gmail.com"
+  },
+  "vercel": {
+    "projectUrl": "https://vercel.com/zhengkejian1-cpus-projects/merge-tf",
+    "siteUrl": "https://merge-tf.vercel.app",
+    "repoImportUrl": "https://vercel.com/new/import?s=https://github.com/zhengkejian1-cpu/MergeTF"
+  }
+}
